@@ -7,3 +7,6 @@
 ## 2024-05-25 - Python String Parsing Overhead
 **Learning:** In Python backend scripts (e.g., `adb_operations.py`), iterating over large command outputs using `str.split('\n')` and modifying strings with `.replace()` and `.split('.')` inside loops introduces measurable overhead due to intermediate list allocations.
 **Action:** Always prefer `str.splitlines()` in list comprehensions combined with string slicing (e.g., `line[8:]`) and `str.find()` with slice indexing (`name[:dot_idx]`) for significantly faster string manipulation and parsing.
+## 2024-05-26 - ADB Subprocess Overhead
+**Learning:** Calling `adb shell` multiple times (e.g., sequentially fetching device properties via `getprop`) introduces significant subprocess and daemon communication overhead (50-100ms per call). However, simply batching commands with semicolons can lead to data misalignment bugs if a property is empty or if the ADB daemon prints warnings.
+**Action:** To minimize overhead when fetching multiple properties or running multiple commands via ADB, batch them into a single `adb shell` execution using key-value pairing (e.g., `echo "MODEL=$(getprop ro.product.model)"`) instead of simple semicolons to prevent data misalignment.
