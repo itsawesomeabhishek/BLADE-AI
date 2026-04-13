@@ -340,6 +340,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ deviceName, onClose }) => {
               className="copy-code-btn"
               onClick={() => copyToClipboard(line.trim(), `line-${i}`)}
               title="Copy command"
+              aria-label="Copy command"
             >
               {copiedId === `line-${i}` ? <FiCheck /> : <FiCopy />}
             </button>
@@ -476,6 +477,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ deviceName, onClose }) => {
                   onClick={exportChat}
                   className="export-btn"
                   title="Export chat history"
+                  aria-label="Export chat history"
                 >
                   <FiDownload className="w-3.5 h-3.5" />
                 </button>
@@ -485,6 +487,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ deviceName, onClose }) => {
                   onClick={importChat}
                   className="import-btn"
                   title="Import chat history"
+                  aria-label="Import chat history"
                 >
                   <FiUpload className="w-3.5 h-3.5" />
                 </button>
@@ -494,6 +497,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ deviceName, onClose }) => {
                   onClick={clearChat}
                   className="clear-btn"
                   title="Clear chat history"
+                  aria-label="Clear chat history"
                 >
                   <FiTrash2 className="w-3.5 h-3.5" />
                 </button>
@@ -503,6 +507,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ deviceName, onClose }) => {
                   onClick={refreshChat}
                   className="refresh-btn"
                   title="Refresh chat"
+                  aria-label="Refresh chat"
                   disabled={isRefreshing}
                 >
                   <FiRefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -515,6 +520,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ deviceName, onClose }) => {
               onClick={onClose}
               className="close-btn"
               title="Close chat"
+              aria-label="Close chat"
             >
               <FiX className="w-5 h-5" />
             </button>
@@ -715,6 +721,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ deviceName, onClose }) => {
                     className="copy-msg-btn"
                     onClick={() => copyToClipboard(msg.content, msg.id)}
                     title="Copy message"
+                    aria-label="Copy message"
                     whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
                   >
@@ -905,6 +912,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ deviceName, onClose }) => {
             onClick={toggleVoiceInput}
             className={`voice-btn ${isRecording ? 'recording' : ''}`}
             title={isRecording ? 'Stop recording' : 'Voice input'}
+            aria-label={isRecording ? 'Stop recording' : 'Voice input'}
             disabled={loading}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
@@ -920,6 +928,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ deviceName, onClose }) => {
             disabled={!input.trim() || loading}
             className="send-btn"
             title="Send message"
+            aria-label="Send message"
             whileHover={{ scale: 1.1, rotate: 15 }}
             whileTap={{ scale: 0.9 }}
           >
