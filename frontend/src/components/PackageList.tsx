@@ -254,35 +254,49 @@ const PackageList: React.FC<PackageListProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshTrigger]);
 
-  // Update stats whenever packages change
-  useEffect(() => {
-    const stats: PackageStats = {
+  // ⚡ Bolt: Calculate base stats in a single pass to avoid multiple O(n) filter calls.
+  // Memoize it so it only updates when the `packages` array changes, not on selection changes.
+  const baseStats = useMemo(() => {
+    let safe = 0, caution = 0, expert = 0, dangerous = 0;
+    for (let i = 0; i < packages.length; i++) {
+      const level = packages[i].safetyLevel;
+      if (level === 'Safe') safe++;
+      else if (level === 'Caution') caution++;
+      else if (level === 'Expert') expert++;
+      else if (level === 'Dangerous') dangerous++;
+    }
+    return {
       total: packages.length,
-      safe: packages.filter((p) => p.safetyLevel === 'Safe').length,
-      caution: packages.filter((p) => p.safetyLevel === 'Caution').length,
-      expert: packages.filter((p) => p.safetyLevel === 'Expert').length,
-      dangerous: packages.filter((p) => p.safetyLevel === 'Dangerous').length,
-      selected: selectedPackages.size,
+      safe,
+      caution,
+      expert,
+      dangerous,
     };
-    onStatsChange(stats);
-  }, [packages, selectedPackages, onStatsChange]);
+  }, [packages]);
+
+  // Update stats whenever packages or selection changes
+  useEffect(() => {
+    onStatsChange({
+      ...baseStats,
+      selected: selectedPackages.size,
+    });
+  }, [baseStats, selectedPackages, onStatsChange]);
 
   const filtered = useMemo(() => {
     const searchLower = search.toLowerCase();
     return packages.filter((pkg) => {
-      // Search filter
-      const matchesSearch =
-        pkg.packageName.toLowerCase().includes(searchLower) ||
-        pkg.appName.toLowerCase().includes(searchLower);
-
-      if (!matchesSearch) return false;
-
-      // Safety level filter
-      if (filterBySafety) {
-        return pkg.safetyLevel === filterBySafety;
+      // ⚡ Bolt: Execute O(1) safety level check first before expensive O(n) string operations
+      if (filterBySafety && pkg.safetyLevel !== filterBySafety) {
+        return false;
       }
 
-      return true;
+      if (!searchLower) return true;
+
+      // Search filter
+      return (
+        pkg.packageName.toLowerCase().includes(searchLower) ||
+        pkg.appName.toLowerCase().includes(searchLower)
+      );
     });
   }, [packages, search, filterBySafety]);
 
