@@ -41,6 +41,7 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ deviceName }) => {
             className="floating-chat-button"
             onClick={() => setIsOpen(true)}
             title="Open AI Assistant"
+            aria-label="Open AI Assistant"
             style={{ position: 'fixed', bottom: 24, right: 24 }}
             initial={{ scale: 0, opacity: 0 }}
             animate={{ 
@@ -68,6 +69,7 @@ export const FloatingChat: React.FC<FloatingChatProps> = ({ deviceName }) => {
             className="floating-chat-button"
             onClick={() => setIsOpen(false)}
             title="Close AI Assistant"
+            aria-label="Close AI Assistant"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
