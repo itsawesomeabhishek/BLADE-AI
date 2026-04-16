@@ -143,24 +143,26 @@ class ADBOperations:
             parts = device_line.split()
             serial = parts[0]
             
-            # Get device properties
+            # ⚡ Bolt: Batch ADB commands to minimize subprocess overhead
+            # Fetch all required properties in a single shell call
             try:
-                # ⚡ Bolt: Batch getprop commands to reduce subprocess overhead
-                # Using key=value pairs to prevent data misalignment from empty lines or ADB warnings
-                props_cmd = 'echo "MODEL=$(getprop ro.product.model)"; echo "NAME=$(getprop ro.product.name)"; echo "MFG=$(getprop ro.product.manufacturer)"; echo "VER=$(getprop ro.build.version.release)"'
-                output = self._run_command([self.adb_path, "shell", props_cmd])
+                props_output = self._run_command([
+                    self.adb_path, "shell",
+                    "getprop ro.product.model; "
+                    "getprop ro.product.name; "
+                    "getprop ro.product.manufacturer; "
+                    "getprop ro.build.version.release"
+                ])
+                lines = [line.strip() for line in props_output.strip().splitlines()]
+                # Pad with "Unknown" in case some properties are missing
+                lines.extend(["Unknown"] * (4 - len(lines)))
+                model, product, manufacturer, android_version = lines[:4]
 
-                def extract_prop(key: str) -> str:
-                    for line in output.splitlines():
-                        if line.startswith(f"{key}="):
-                            val = line.split("=", 1)[1].strip()
-                            return val if val else "Unknown"
-                    return "Unknown"
-
-                model = extract_prop("MODEL")
-                product = extract_prop("NAME")
-                manufacturer = extract_prop("MFG")
-                android_version = extract_prop("VER")
+                # Replace empty strings with Unknown
+                model = model if model else "Unknown"
+                product = product if product else "Unknown"
+                manufacturer = manufacturer if manufacturer else "Unknown"
+                android_version = android_version if android_version else "Unknown"
             except Exception:
                 model = product = manufacturer = android_version = "Unknown"
             
@@ -220,6 +222,20 @@ class ADBOperations:
         except Exception as e:
             raise ADBError(f"Failed to list packages: {str(e)}")
     
+    @staticmethod
+    def is_valid_package_name(package_name: str) -> bool:
+        """
+        Validate if a package name follows Android naming conventions.
+        - Must start with a letter.
+        - Can contain letters, numbers, underscores, and dots.
+        - Each segment (separated by dot) must start with a letter.
+        - Prevents flag injection as it cannot start with a hyphen.
+        """
+        if not package_name:
+            return False
+        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'
+        return bool(re.match(pattern, package_name))
+
     def _guess_package_type(self, package: str) -> str:
         """Guess if package is system or user app"""
         if package.startswith(self.SYSTEM_PREFIXES):
