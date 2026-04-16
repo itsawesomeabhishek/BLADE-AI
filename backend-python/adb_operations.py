@@ -222,6 +222,20 @@ class ADBOperations:
         except Exception as e:
             raise ADBError(f"Failed to list packages: {str(e)}")
     
+    @staticmethod
+    def is_valid_package_name(package_name: str) -> bool:
+        """
+        Validate if a package name follows Android naming conventions.
+        - Must start with a letter.
+        - Can contain letters, numbers, underscores, and dots.
+        - Each segment (separated by dot) must start with a letter.
+        - Prevents flag injection as it cannot start with a hyphen.
+        """
+        if not package_name:
+            return False
+        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'
+        return bool(re.match(pattern, package_name))
+
     def _guess_package_type(self, package: str) -> str:
         """Guess if package is system or user app"""
         if package.startswith(self.SYSTEM_PREFIXES):
