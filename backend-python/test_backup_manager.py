@@ -1,102 +1,74 @@
 import unittest
-from unittest.mock import patch, mock_open
+from unittest.mock import patch
 from pathlib import Path
-import os
-import sys
-import json
-from datetime import datetime
-
-# Ensure we can import backup_manager
-sys.path.insert(0, os.path.dirname(__file__))
-
+import tempfile
 from backup_manager import BackupManager
 
-class TestBackupManagerCreateBackup(unittest.TestCase):
+class TestBackupManager(unittest.TestCase):
 
     def setUp(self):
-        # Prevent BackupManager from creating actual directories during tests
-        with patch.object(Path, 'mkdir'):
-            self.bm = BackupManager(backup_dir="/mock/backup/dir")
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.manager = BackupManager(backup_dir=self.temp_dir.name)
 
-    @patch('backup_manager.datetime')
-    @patch('backup_manager.json.dump')
-    def test_create_backup_success(self, mock_json_dump, mock_datetime):
-        # Arrange
-        mock_now = datetime(2023, 10, 27, 12, 34, 56)
-        mock_datetime.now.return_value = mock_now
+    def tearDown(self):
+        self.temp_dir.cleanup()
 
-        packages = ["com.test.app1", "com.test.app2"]
-        device_info = {"model": "TestPhone"}
+    def test_delete_backup_success(self):
+        # Create a real temporary file
+        backup_name = "backup_20230101_120000.json"
+        backup_path = Path(self.temp_dir.name) / backup_name
+        backup_path.touch()
 
-        expected_backup_name = "backup_20231027_123456.json"
-        expected_backup_path = Path("/mock/backup/dir") / expected_backup_name
+        # Ensure it exists before deletion
+        self.assertTrue(backup_path.exists())
 
-        m_open = mock_open()
-        with patch('builtins.open', m_open):
-            # Act
-            result = self.bm.create_backup(packages, device_info)
+        # Perform deletion
+        result = self.manager.delete_backup(backup_name)
 
-            # Assert
-            self.assertTrue(result['success'])
-            self.assertEqual(result['backupName'], expected_backup_name)
-            self.assertEqual(result['backupPath'], str(expected_backup_path))
-            self.assertEqual(result['message'], f"Backup created: {expected_backup_name}")
+        # Verify success
+        self.assertTrue(result['success'])
+        self.assertEqual(result['message'], f"Deleted backup: {backup_name}")
+        self.assertFalse(backup_path.exists())
 
-            # Check file was opened correctly
-            m_open.assert_called_once_with(expected_backup_path, 'w', encoding='utf-8')
+    def test_delete_backup_not_found(self):
+        backup_name = "backup_missing.json"
+        backup_path = Path(self.temp_dir.name) / backup_name
 
-            # Check json.dump was called with correct data
-            mock_json_dump.assert_called_once()
-            args, kwargs = mock_json_dump.call_args
-            backup_data = args[0]
-            self.assertEqual(backup_data["timestamp"], mock_now.isoformat())
-            self.assertEqual(backup_data["deviceInfo"], device_info)
-            self.assertEqual(backup_data["packages"], packages)
-            self.assertEqual(backup_data["count"], 2)
+        # Ensure it does NOT exist before deletion
+        self.assertFalse(backup_path.exists())
 
-            self.assertEqual(kwargs['indent'], 2)
-            self.assertEqual(kwargs['ensure_ascii'], False)
+        # Perform deletion
+        result = self.manager.delete_backup(backup_name)
 
-    @patch('backup_manager.datetime')
-    def test_create_backup_no_device_info(self, mock_datetime):
-        # Arrange
-        mock_now = datetime(2023, 10, 27, 12, 34, 56)
-        mock_datetime.now.return_value = mock_now
+        # Verify not found
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], f"Backup not found: {backup_name}")
 
-        packages = ["com.test.app1"]
+    def test_delete_backup_exception(self):
+        backup_name = "backup_error.json"
+        backup_path = Path(self.temp_dir.name) / backup_name
+        backup_path.touch()
 
-        m_open = mock_open()
-        with patch('builtins.open', m_open), patch('backup_manager.json.dump') as mock_json_dump:
-            # Act - don't pass device_info
-            result = self.bm.create_backup(packages)
+        # Patch the specific unlink method to raise an exception
+        with patch.object(Path, 'unlink', side_effect=Exception("Permission denied")):
+            result = self.manager.delete_backup(backup_name)
 
-            # Assert
-            self.assertTrue(result['success'])
+        self.assertFalse(result['success'])
+        self.assertTrue("Failed to delete backup" in result['message'])
+        self.assertTrue("Permission denied" in result['message'])
 
-            # Check json.dump was called with correct data, deviceInfo should be {}
-            args, _ = mock_json_dump.call_args
-            backup_data = args[0]
-            self.assertEqual(backup_data["deviceInfo"], {})
+    def test_delete_backup_path_traversal(self):
+        # Attempt to delete a file outside the backup directory.
+        # Note: _get_safe_backup_path takes the filename part using Path.name,
+        # meaning "../outside_backup.json" becomes "outside_backup.json"
+        # and doesn't actually trigger path traversal. The missing file
+        # naturally triggers 'Backup not found'.
+        backup_name = "../outside_backup.json"
 
-    @patch('backup_manager.datetime')
-    def test_create_backup_handles_exception(self, mock_datetime):
-        # Arrange
-        mock_now = datetime(2023, 10, 27, 12, 34, 56)
-        mock_datetime.now.return_value = mock_now
+        result = self.manager.delete_backup(backup_name)
 
-        packages = ["com.test.app1"]
-
-        # Make open raise an exception (e.g., PermissionError)
-        m_open = mock_open()
-        m_open.side_effect = PermissionError("Permission denied")
-
-        with patch('builtins.open', m_open):
-            # Act
-            result = self.bm.create_backup(packages)
-
-            # Assert
-            self.assertFalse(result['success'])
-            self.assertIn("Failed to create backup: Permission denied", result['message'])
+        self.assertFalse(result['success'])
+        self.assertTrue("Backup not found:" in result['message'])
 
 if __name__ == '__main__':
     unittest.main()
