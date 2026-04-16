@@ -8,6 +8,7 @@ import json
 import requests
 from typing import Dict
 from dotenv import load_dotenv
+from adb_operations import ADBOperations
 
 from adb_operations import ADBOperations
 
@@ -53,11 +54,11 @@ class AIAdvisor:
         """Analyze an Android package and return safety information"""
         if not ADBOperations.is_valid_package_name(package_name):
             return {
-                "error": "Invalid package name format",
+                "error": f"Invalid package name format: {package_name}",
                 "safetyLevel": "unknown",
                 "appName": package_name,
                 "description": "Invalid package name provided",
-                "recommendation": "Provide a valid package name"
+                "recommendation": "Please provide a valid Android package name"
             }
 
         if not self.api_key:
