@@ -280,19 +280,18 @@ const PackageList: React.FC<PackageListProps> = ({
   const filtered = useMemo(() => {
     const searchLower = search.toLowerCase();
     return packages.filter((pkg) => {
-      // Search filter
-      const matchesSearch =
-        pkg.packageName.toLowerCase().includes(searchLower) ||
-        pkg.appName.toLowerCase().includes(searchLower);
-
-      if (!matchesSearch) return false;
-
-      // Safety level filter
-      if (filterBySafety) {
-        return pkg.safetyLevel === filterBySafety;
+      // ⚡ Bolt: Execute O(1) safety level check first before expensive O(n) string operations
+      if (filterBySafety && pkg.safetyLevel !== filterBySafety) {
+        return false;
       }
 
-      return true;
+      if (!searchLower) return true;
+
+      // Search filter
+      return (
+        pkg.packageName.toLowerCase().includes(searchLower) ||
+        pkg.appName.toLowerCase().includes(searchLower)
+      );
     });
   }, [packages, search, filterBySafety]);
 
