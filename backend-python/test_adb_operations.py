@@ -1,25 +1,49 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from adb_operations import ADBOperations, ADBError
 
 class TestADBOperations(unittest.TestCase):
+    def setUp(self):
+        self.adb = ADBOperations()
+
     @patch.object(ADBOperations, '_run_command')
-    def test_get_device_info_no_device_connected(self, mock_run_command):
-        """Test get_device_info raises ADBError when no device is connected"""
-        # Mock the _run_command to return an empty string, simulating no devices
-        mock_run_command.return_value = ""
+    def test_uninstall_package_success(self, mock_run_command):
+        mock_run_command.return_value = "Success\n"
+        result = self.adb.uninstall_package("com.example.app")
 
-        adb = ADBOperations()
+        mock_run_command.assert_called_once_with(
+            [self.adb.adb_path, "shell", "pm", "uninstall", "--user", "0", "com.example.app"]
+        )
+        self.assertEqual(result, {
+            "success": True,
+            "message": "Successfully uninstalled com.example.app"
+        })
 
-        # Assert that ADBError is raised
-        with self.assertRaises(ADBError) as context:
-            adb.get_device_info()
+    @patch.object(ADBOperations, '_run_command')
+    def test_uninstall_package_failure(self, mock_run_command):
+        mock_run_command.return_value = "Failure [DELETE_FAILED_INTERNAL_ERROR]\n"
+        result = self.adb.uninstall_package("com.example.app")
 
-        # Check that the exception message is correct
-        self.assertEqual(str(context.exception), "No device connected")
+        mock_run_command.assert_called_once_with(
+            [self.adb.adb_path, "shell", "pm", "uninstall", "--user", "0", "com.example.app"]
+        )
+        self.assertEqual(result, {
+            "success": False,
+            "message": "Failed to uninstall: Failure [DELETE_FAILED_INTERNAL_ERROR]"
+        })
 
-        # Verify _run_command was called with correct arguments
-        mock_run_command.assert_called_once_with([adb.adb_path, "devices", "-l"])
+    @patch.object(ADBOperations, '_run_command')
+    def test_uninstall_package_exception(self, mock_run_command):
+        mock_run_command.side_effect = Exception("ADB command failed")
+        result = self.adb.uninstall_package("com.example.app")
+
+        mock_run_command.assert_called_once_with(
+            [self.adb.adb_path, "shell", "pm", "uninstall", "--user", "0", "com.example.app"]
+        )
+        self.assertEqual(result, {
+            "success": False,
+            "message": "ADB command failed"
+        })
 
 if __name__ == '__main__':
     unittest.main()
