@@ -6,6 +6,9 @@ import subprocess
 import json
 from typing import List, Dict, Optional
 import re
+import shutil
+import os
+import sys
 
 
 class ADBError(Exception):
@@ -73,10 +76,6 @@ class ADBOperations:
         return bool(re.match(pattern, package_name))
 
     def __init__(self):
-        import shutil
-        import os
-        import sys
-        
         # Determine base directory (PyInstaller exe or script location)
         if getattr(sys, 'frozen', False):
             base_dir = os.path.dirname(sys.executable)
@@ -144,11 +143,28 @@ class ADBOperations:
             parts = device_line.split()
             serial = parts[0]
             
-            # Get device properties
-            model = self._get_property("ro.product.model")
-            product = self._get_property("ro.product.name")
-            manufacturer = self._get_property("ro.product.manufacturer")
-            android_version = self._get_property("ro.build.version.release")
+            # ⚡ Bolt: Batch ADB commands to minimize subprocess overhead
+            # Fetch all required properties in a single shell call
+            try:
+                props_output = self._run_command([
+                    self.adb_path, "shell",
+                    "getprop ro.product.model; "
+                    "getprop ro.product.name; "
+                    "getprop ro.product.manufacturer; "
+                    "getprop ro.build.version.release"
+                ])
+                lines = [line.strip() for line in props_output.strip().splitlines()]
+                # Pad with "Unknown" in case some properties are missing
+                lines.extend(["Unknown"] * (4 - len(lines)))
+                model, product, manufacturer, android_version = lines[:4]
+
+                # Replace empty strings with Unknown
+                model = model if model else "Unknown"
+                product = product if product else "Unknown"
+                manufacturer = manufacturer if manufacturer else "Unknown"
+                android_version = android_version if android_version else "Unknown"
+            except Exception:
+                model = product = manufacturer = android_version = "Unknown"
             
             return {
                 "name": serial,
@@ -206,6 +222,20 @@ class ADBOperations:
         except Exception as e:
             raise ADBError(f"Failed to list packages: {str(e)}")
     
+    @staticmethod
+    def is_valid_package_name(package_name: str) -> bool:
+        """
+        Validate if a package name follows Android naming conventions.
+        - Must start with a letter.
+        - Can contain letters, numbers, underscores, and dots.
+        - Each segment (separated by dot) must start with a letter.
+        - Prevents flag injection as it cannot start with a hyphen.
+        """
+        if not package_name:
+            return False
+        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'
+        return bool(re.match(pattern, package_name))
+
     def _guess_package_type(self, package: str) -> str:
         """Guess if package is system or user app"""
         if package.startswith(self.SYSTEM_PREFIXES):
