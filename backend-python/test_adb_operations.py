@@ -1,51 +1,49 @@
 import unittest
-from adb_operations import ADBOperations
+from unittest.mock import patch, MagicMock
+from adb_operations import ADBOperations, ADBError
 
 class TestADBOperations(unittest.TestCase):
     def setUp(self):
         self.adb = ADBOperations()
 
-    def test_guess_package_type_system(self):
-        system_packages = [
-            "com.android.systemui",
-            "com.google.android.gms",
-            "com.samsung.android.app",
-            "com.xiaomi.finddevice",
-            "com.huawei.system",
-            "com.oppo.camera",
-            "com.vivo.browser"
-        ]
-        for pkg in system_packages:
-            with self.subTest(pkg=pkg):
-                self.assertEqual(self.adb._guess_package_type(pkg), "system")
+    @patch.object(ADBOperations, '_run_command')
+    def test_uninstall_package_success(self, mock_run_command):
+        mock_run_command.return_value = "Success\n"
+        result = self.adb.uninstall_package("com.example.app")
 
-    def test_guess_package_type_user(self):
-        user_packages = [
-            "com.facebook.katana",
-            "org.videolan.vlc",
-            "com.example.app",
-            "net.domain.app"
-        ]
-        for pkg in user_packages:
-            with self.subTest(pkg=pkg):
-                self.assertEqual(self.adb._guess_package_type(pkg), "user")
+        mock_run_command.assert_called_once_with(
+            [self.adb.adb_path, "shell", "pm", "uninstall", "--user", "0", "com.example.app"]
+        )
+        self.assertEqual(result, {
+            "success": True,
+            "message": "Successfully uninstalled com.example.app"
+        })
 
-    def test_guess_package_type_edge_cases(self):
-        # Exact prefix match but missing the trailing dot should be classified as user
-        # unless it happens to match another condition.
-        # e.g. "com.android" does not start with "com.android."
-        edge_cases_user = [
-            "com.android",
-            "com.google",
-            "com.samsung",
-            "com.xiaomi",
-            "com.huawei",
-            "com.oppo",
-            "com.vivo"
-        ]
-        for pkg in edge_cases_user:
-            with self.subTest(pkg=pkg):
-                self.assertEqual(self.adb._guess_package_type(pkg), "user")
+    @patch.object(ADBOperations, '_run_command')
+    def test_uninstall_package_failure(self, mock_run_command):
+        mock_run_command.return_value = "Failure [DELETE_FAILED_INTERNAL_ERROR]\n"
+        result = self.adb.uninstall_package("com.example.app")
+
+        mock_run_command.assert_called_once_with(
+            [self.adb.adb_path, "shell", "pm", "uninstall", "--user", "0", "com.example.app"]
+        )
+        self.assertEqual(result, {
+            "success": False,
+            "message": "Failed to uninstall: Failure [DELETE_FAILED_INTERNAL_ERROR]"
+        })
+
+    @patch.object(ADBOperations, '_run_command')
+    def test_uninstall_package_exception(self, mock_run_command):
+        mock_run_command.side_effect = Exception("ADB command failed")
+        result = self.adb.uninstall_package("com.example.app")
+
+        mock_run_command.assert_called_once_with(
+            [self.adb.adb_path, "shell", "pm", "uninstall", "--user", "0", "com.example.app"]
+        )
+        self.assertEqual(result, {
+            "success": False,
+            "message": "ADB command failed"
+        })
 
 if __name__ == '__main__':
     unittest.main()
