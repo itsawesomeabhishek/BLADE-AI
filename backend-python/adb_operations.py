@@ -277,6 +277,15 @@ class ADBOperations:
         # Default to Safe (user apps, bloatware)
         return "Safe"
     
+    @staticmethod
+    def is_valid_package_name(package_name: str) -> bool:
+        """
+        Validate package name to prevent command injection.
+        Rules: Starts with letter, only contains letters, numbers, and underscores,
+        and optionally dots followed by letters/numbers/underscores.
+        """
+        return bool(re.match(r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$', package_name))
+
     def uninstall_package(self, package_name: str) -> Dict:
         """Uninstall a package from device"""
         if not self.is_valid_package_name(package_name):
