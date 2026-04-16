@@ -227,6 +227,9 @@ class ActionExecutor:
         try:
             all_packages = self.adb.list_packages('all')
             
+            # Pre-process package_names to lowercase to avoid redundant operations
+            package_names_lower = [name.lower() for name in package_names]
+
             # Find matching packages
             matches = []
 
