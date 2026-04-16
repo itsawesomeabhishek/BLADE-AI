@@ -6,6 +6,9 @@ import subprocess
 import json
 from typing import List, Dict, Optional
 import re
+import shutil
+import os
+import sys
 
 
 class ADBError(Exception):
@@ -16,23 +19,63 @@ class ADBError(Exception):
 class ADBOperations:
     """Handle all ADB-related operations"""
     
+    # Class-level constants for performance optimization
+    DANGEROUS_PACKAGES = frozenset({
+        'com.android.systemui',
+        'com.android.phone',
+        'com.android.settings',
+        'com.android.launcher',
+        'com.android.launcher3',
+        'com.android.vending',  # Play Store
+    })
+
+    EXPERT_PREFIXES = (
+        'com.google.android.gms',  # Google Play Services
+        'com.google.android.gsf',  # Google Services Framework
+        'com.android.bluetooth',
+        'com.android.nfc',
+    )
+
+    CAUTION_PREFIXES = (
+        'com.samsung.',
+        'com.xiaomi.',
+        'com.miui.',
+        'com.huawei.',
+        'com.oppo.',
+        'com.vivo.',
+        'com.realme.',
+        'com.oneplus.',
+    )
+
+    SYSTEM_PREFIXES = (
+        'com.android.',
+        'com.google.',
+        'com.samsung.',
+        'com.xiaomi.',
+        'com.huawei.',
+        'com.oppo.',
+        'com.vivo.',
+        'android.',
+    )
+
+    COMMON_PREFIXES = (
+        'com.android.',
+        'com.google.',
+        'com.',
+        'org.',
+        'net.',
+    )
+
     @staticmethod
     def is_valid_package_name(package_name: str) -> bool:
-        """
-        Validate that a package name string matches standard Android package name conventions
-        and contains no injection payloads.
-        """
+        """Validate Android package name format to prevent injection attacks"""
         if not package_name:
             return False
-        # Matches: com.example.app, com.example_app.test123
-        pattern = r"^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$"
+        # Standard Android package name format
+        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'
         return bool(re.match(pattern, package_name))
 
     def __init__(self):
-        import shutil
-        import os
-        import sys
-        
         # Determine base directory (PyInstaller exe or script location)
         if getattr(sys, 'frozen', False):
             base_dir = os.path.dirname(sys.executable)
@@ -100,11 +143,28 @@ class ADBOperations:
             parts = device_line.split()
             serial = parts[0]
             
-            # Get device properties
-            model = self._get_property("ro.product.model")
-            product = self._get_property("ro.product.name")
-            manufacturer = self._get_property("ro.product.manufacturer")
-            android_version = self._get_property("ro.build.version.release")
+            # ⚡ Bolt: Batch ADB commands to minimize subprocess overhead
+            # Fetch all required properties in a single shell call
+            try:
+                props_output = self._run_command([
+                    self.adb_path, "shell",
+                    "getprop ro.product.model; "
+                    "getprop ro.product.name; "
+                    "getprop ro.product.manufacturer; "
+                    "getprop ro.build.version.release"
+                ])
+                lines = [line.strip() for line in props_output.strip().splitlines()]
+                # Pad with "Unknown" in case some properties are missing
+                lines.extend(["Unknown"] * (4 - len(lines)))
+                model, product, manufacturer, android_version = lines[:4]
+
+                # Replace empty strings with Unknown
+                model = model if model else "Unknown"
+                product = product if product else "Unknown"
+                manufacturer = manufacturer if manufacturer else "Unknown"
+                android_version = android_version if android_version else "Unknown"
+            except Exception:
+                model = product = manufacturer = android_version = "Unknown"
             
             return {
                 "name": serial,
@@ -139,16 +199,20 @@ class ADBOperations:
             
             output = self._run_command(cmd)
             
-            packages = []
-            for line in output.split('\n'):
-                if line.startswith('package:'):
-                    package_name = line.replace('package:', '').strip()
-                    if package_name:
-                        packages.append({
-                            "packageName": package_name,
-                            "appName": self._get_app_name(package_name),
-                            "safetyLevel": self._determine_safety_level(package_name)
-                        })
+            # Use local references for faster lookups inside the loop
+            get_app_name = self._get_app_name
+            determine_safety_level = self._determine_safety_level
+
+            # ⚡ Bolt: Fast string slicing, assignment expressions, and list comprehension
+            packages = [
+                {
+                    "packageName": pkg_name,
+                    "appName": get_app_name(pkg_name),
+                    "safetyLevel": determine_safety_level(pkg_name)
+                }
+                for line in output.splitlines()
+                if line.startswith('package:') and (pkg_name := line[8:].strip())
+            ]
             
             # Sort by package name
             packages.sort(key=lambda p: p["packageName"])
@@ -158,87 +222,57 @@ class ADBOperations:
         except Exception as e:
             raise ADBError(f"Failed to list packages: {str(e)}")
     
+    @staticmethod
+    def is_valid_package_name(package_name: str) -> bool:
+        """
+        Validate if a package name follows Android naming conventions.
+        - Must start with a letter.
+        - Can contain letters, numbers, underscores, and dots.
+        - Each segment (separated by dot) must start with a letter.
+        - Prevents flag injection as it cannot start with a hyphen.
+        """
+        if not package_name:
+            return False
+        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'
+        return bool(re.match(pattern, package_name))
+
     def _guess_package_type(self, package: str) -> str:
         """Guess if package is system or user app"""
-        system_prefixes = [
-            'com.android.',
-            'com.google.',
-            'com.samsung.',
-            'com.xiaomi.',
-            'com.huawei.',
-            'com.oppo.',
-            'com.vivo.',
-            'android.'
-        ]
-        
-        for prefix in system_prefixes:
-            if package.startswith(prefix):
-                return "system"
+        if package.startswith(self.SYSTEM_PREFIXES):
+            return "system"
         return "user"
     
     def _get_app_name(self, package_name: str) -> str:
         """Extract a friendly app name from package name"""
         # Remove common prefixes
         name = package_name
-        prefixes = ['com.android.', 'com.google.', 'com.', 'org.', 'net.']
-        for prefix in prefixes:
+        for prefix in self.COMMON_PREFIXES:
             if name.startswith(prefix):
                 name = name[len(prefix):]
                 break
         
         # Split by dots and take the most relevant part
-        parts = name.split('.')
-        if parts:
-            name = parts[0]
+        # ⚡ Bolt: Using find and slice is much faster than split() and list index
+        dot_idx = name.find('.')
+        if dot_idx != -1:
+            name = name[:dot_idx]
         
         # Capitalize first letter
         return name.capitalize()
     
     def _determine_safety_level(self, package_name: str) -> str:
         """Determine safety level for removing a package"""
-        # Dangerous - Critical system apps
-        dangerous_packages = {
-            'com.android.systemui',
-            'com.android.phone',
-            'com.android.settings',
-            'com.android.launcher',
-            'com.android.launcher3',
-            'com.android.vending',  # Play Store
-        }
-        
-        # Expert - May break functionality
-        expert_prefixes = [
-            'com.google.android.gms',  # Google Play Services
-            'com.google.android.gsf',  # Google Services Framework
-            'com.android.bluetooth',
-            'com.android.nfc',
-        ]
-        
-        # Caution - OEM apps
-        caution_prefixes = [
-            'com.samsung.',
-            'com.xiaomi.',
-            'com.miui.',
-            'com.huawei.',
-            'com.oppo.',
-            'com.vivo.',
-            'com.realme.',
-            'com.oneplus.',
-        ]
-        
         # Check dangerous
-        if package_name in dangerous_packages:
+        if package_name in self.DANGEROUS_PACKAGES:
             return "Dangerous"
         
         # Check expert
-        for prefix in expert_prefixes:
-            if package_name.startswith(prefix):
-                return "Expert"
+        if package_name.startswith(self.EXPERT_PREFIXES):
+            return "Expert"
         
         # Check caution
-        for prefix in caution_prefixes:
-            if package_name.startswith(prefix):
-                return "Caution"
+        if package_name.startswith(self.CAUTION_PREFIXES):
+            return "Caution"
         
         # Default to Safe (user apps, bloatware)
         return "Safe"
@@ -248,7 +282,7 @@ class ADBOperations:
         if not self.is_valid_package_name(package_name):
             return {
                 "success": False,
-                "message": "Invalid package name"
+                "message": f"Invalid package name format: {package_name}"
             }
 
         try:
@@ -279,7 +313,7 @@ class ADBOperations:
         if not self.is_valid_package_name(package_name):
             return {
                 "success": False,
-                "message": "Invalid package name"
+                "message": f"Invalid package name format: {package_name}"
             }
 
         try:
