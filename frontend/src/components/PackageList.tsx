@@ -143,7 +143,7 @@ const PackageListItem = React.memo(({ pkg, isSelected, isLightMode, toggleSelect
             background: isLightMode ? 'rgba(46, 196, 182, 0.15)' : 'rgba(88, 166, 175, 0.15)',
             border: isLightMode ? '1px solid rgba(46, 196, 182, 0.20)' : '1px solid rgba(88, 166, 175, 0.20)',
           }}
-          title="AI Safety Analysis"
+          title="AI Safety Analysis" aria-label="AI Safety Analysis"
         >
           <FiZap className="w-4 h-4" style={{ color: isLightMode ? '#2EC4B6' : '#58A6AF' }} />
         </button>
@@ -254,8 +254,9 @@ const PackageList: React.FC<PackageListProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshTrigger]);
 
-  // ⚡ Bolt: Calculate base stats in a single pass to avoid multiple O(n) filter calls.
-  // Memoize it so it only updates when the `packages` array changes, not on selection changes.
+  // ⚡ Bolt: Calculate base package stats in a single O(n) pass
+  // to avoid running multiple O(n) .filter() operations on every render
+  // when selectedPackages (a frequent state change) updates.
   const baseStats = useMemo(() => {
     let safe = 0, caution = 0, expert = 0, dangerous = 0;
     for (let i = 0; i < packages.length; i++) {
@@ -265,13 +266,7 @@ const PackageList: React.FC<PackageListProps> = ({
       else if (level === 'Expert') expert++;
       else if (level === 'Dangerous') dangerous++;
     }
-    return {
-      total: packages.length,
-      safe,
-      caution,
-      expert,
-      dangerous,
-    };
+    return { total: packages.length, safe, caution, expert, dangerous };
   }, [packages]);
 
   // Update stats whenever packages or selection changes
