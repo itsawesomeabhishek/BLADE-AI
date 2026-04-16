@@ -7,6 +7,6 @@
 ## 2024-05-25 - Python String Parsing Overhead
 **Learning:** In Python backend scripts (e.g., `adb_operations.py`), iterating over large command outputs using `str.split('\n')` and modifying strings with `.replace()` and `.split('.')` inside loops introduces measurable overhead due to intermediate list allocations.
 **Action:** Always prefer `str.splitlines()` in list comprehensions combined with string slicing (e.g., `line[8:]`) and `str.find()` with slice indexing (`name[:dot_idx]`) for significantly faster string manipulation and parsing.
-## 2024-05-26 - React Array Filter Bottleneck
-**Learning:** In React components dealing with large lists (like `PackageList.tsx`), chaining multiple `Array.prototype.filter()` calls inside a `useEffect` hooked to frequent state changes (like checkbox toggles) causes a massive O(4n) re-calculation overhead and blocks the main thread.
-**Action:** Always extract static base array stats into a single-pass O(n) loop inside a `useMemo` block hooked to the array itself, and then mix in dynamic fast-changing states (like selection counts) in a separate `useEffect`. Also, in search filters, evaluate O(1) checks (like exact matches on enum values) before expensive O(n) string manipulation checks like `toLowerCase().includes()`.
+## 2024-05-26 - ADB Subprocess Bottleneck
+**Learning:** Executing sequential Python `subprocess.run` calls to fetch individual Android device properties via `adb shell getprop` introduces significant performance overhead due to repeated adb server round-trips and process spawning (e.g., 10-15ms vs 2-3ms).
+**Action:** Always batch multiple ADB shell commands into a single `subprocess.run` execution using shell separators (`;`) to minimize connection and process overhead, while ensuring outputs are safely padded and parsed.
