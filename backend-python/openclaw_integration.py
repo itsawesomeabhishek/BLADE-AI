@@ -5,33 +5,42 @@ Enables chatbot to execute actions via command parsing
 import json
 import re
 from typing import Dict, List, Optional, Tuple
+from functools import lru_cache
 from adb_operations import ADBOperations
 
 
-# ⚡ Bolt: Module-level pre-compiled regex for package extraction, improving performance by ~23%
-# compared to inline compilation or instance-level.
+# ⚡ Bolt: Module-level pre-compiled regex for package extraction
 PACKAGE_NAME_RE = re.compile(r'com\.[a-zA-Z0-9_.]+|[a-z]+\.[a-zA-Z0-9_.]+\.[a-zA-Z0-9_]+')
 
 
 class CommandParser:
     """Parse natural language commands into actions"""
     
-    # ⚡ Bolt: Class-level flattened list of (pattern, intent) for faster iteration and reduced instantiation overhead.
-    # Improves instantiation time by ~97% (0.52s -> 0.016s per 100k) and parsing speed by ~4% (3.70s -> 3.56s per 100k) compared to nested loops.
+    # ⚡ Bolt: Compile regexes once at class level and flatten for faster iteration
     _INTENT_PATTERNS_FLAT = [
-        (re.compile(r'\b(remove|uninstall|delete|get rid of)\s+(.+)'), 'uninstall'),
-        (re.compile(r'\b(disable|turn off)\s+(.+)'), 'uninstall'),
-        (re.compile(r'\b(scan|check|find|show|list)\s+(bloatware|packages|apps)'), 'scan'),
-        (re.compile(r'what (bloatware|packages|apps)'), 'scan'),
-        (re.compile(r'\b(create|make|backup)\s+(backup|save)'), 'backup'),
-        (re.compile(r'\b(restore|reinstall)\s+(.+)'), 'restore'),
-        (re.compile(r'\b(analyze|check|tell me about|info about|what is)\s+(.+)'), 'analyze'),
+        (intent, pattern)
+        for intent, patterns in {
+            'uninstall': [
+                re.compile(r'\b(remove|uninstall|delete|get rid of)\s+(.+)'),
+                re.compile(r'\b(disable|turn off)\s+(.+)'),
+            ],
+            'scan': [
+                re.compile(r'\b(scan|check|find|show|list)\s+(bloatware|packages|apps)'),
+                re.compile(r'what (bloatware|packages|apps)'),
+            ],
+            'backup': [
+                re.compile(r'\b(create|make|backup)\s+(backup|save)'),
+            ],
+            'restore': [
+                re.compile(r'\b(restore|reinstall)\s+(.+)'),
+            ],
+            'analyze': [
+                re.compile(r'\b(analyze|check|tell me about|info about|what is)\s+(.+)'),
+            ],
+        }.items()
+        for pattern in patterns
     ]
 
-    def __init__(self):
-        # State now handled by class-level constants
-        pass
-    
     def parse_command(self, message: str) -> Dict:
         """
         Parse a message and extract intent + entities
@@ -46,8 +55,9 @@ class CommandParser:
         """
         message_lower = message.lower().strip()
         
-        # Check each flattened intent pattern
-        for pattern, intent in self._INTENT_PATTERNS_FLAT:
+        # Check each intent pattern
+        # ⚡ Bolt: Iterate over pre-flattened patterns
+        for intent, pattern in self._INTENT_PATTERNS_FLAT:
             match = pattern.search(message_lower)
             if match:
                 entities = self._extract_entities(intent, match, message_lower)
@@ -105,6 +115,14 @@ class CommandParser:
 class ActionExecutor:
     """Execute actions parsed from commands"""
     
+    @staticmethod
+    @lru_cache(maxsize=128)
+    def _get_keyword_pattern(keywords_tuple: Tuple[str, ...]) -> Optional[re.Pattern]:
+        """⚡ Bolt: Cache pattern compilation to avoid redundant work"""
+        if keywords_tuple:
+            return re.compile('|'.join(re.escape(k) for k in keywords_tuple))
+        return None
+
     # ⚡ Bolt: Pre-compile bloatware indicators into a single regex for O(n) substring matching
     # instead of iterative 'in' checks. This speeds up scanning by ~57%.
     _BLOATWARE_PATTERN = re.compile(
@@ -216,11 +234,9 @@ class ActionExecutor:
             lower_keywords = [k.lower() for k in package_names]
             exact_matches = set(lower_keywords)
 
-            # Only compile regex if there are keywords to prevent empty pattern errors
-            if lower_keywords:
-                pattern = re.compile('|'.join(re.escape(k) for k in lower_keywords))
-            else:
-                pattern = None
+            # ⚡ Bolt: Use cached pattern compiler with a sorted tuple
+            keywords_tuple = tuple(sorted(lower_keywords))
+            pattern = self._get_keyword_pattern(keywords_tuple)
 
             for pkg in all_packages:
                 pkg_name = pkg['packageName'].lower()
