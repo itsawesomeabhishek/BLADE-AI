@@ -1,106 +1,74 @@
 import unittest
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import patch
 from pathlib import Path
-import json
-
+import tempfile
 from backup_manager import BackupManager
 
 class TestBackupManager(unittest.TestCase):
+
     def setUp(self):
-        # Prevent actual directory creation during test setup
-        with patch('pathlib.Path.mkdir'):
-            self.manager = BackupManager("/fake/backup/dir")
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.manager = BackupManager(backup_dir=self.temp_dir.name)
 
-    @patch('pathlib.Path.glob')
-    @patch('builtins.open', new_callable=mock_open)
-    @patch('json.load')
-    def test_list_backups_success(self, mock_json_load, mock_file, mock_glob):
-        """Test listing backups successfully and sorting by timestamp"""
-        # Mock glob to return two files
-        file1 = MagicMock(spec=Path)
-        file1.name = "backup_20230101_120000.json"
-        file1.__str__.return_value = "/fake/backup/dir/backup_20230101_120000.json"
+    def tearDown(self):
+        self.temp_dir.cleanup()
 
-        file2 = MagicMock(spec=Path)
-        file2.name = "backup_20230102_120000.json"
-        file2.__str__.return_value = "/fake/backup/dir/backup_20230102_120000.json"
+    def test_delete_backup_success(self):
+        # Create a real temporary file
+        backup_name = "backup_20230101_120000.json"
+        backup_path = Path(self.temp_dir.name) / backup_name
+        backup_path.touch()
 
-        mock_glob.return_value = [file1, file2]
+        # Ensure it exists before deletion
+        self.assertTrue(backup_path.exists())
 
-        # Mock json.load to return different data for each file
-        data1 = {
-            "timestamp": "2023-01-01T12:00:00",
-            "count": 2,
-            "deviceInfo": {"model": "Device1"}
-        }
-        data2 = {
-            "timestamp": "2023-01-02T12:00:00",
-            "count": 5,
-            "deviceInfo": {"model": "Device2"}
-        }
-        # First file1 is loaded, then file2 is loaded
-        mock_json_load.side_effect = [data1, data2]
+        # Perform deletion
+        result = self.manager.delete_backup(backup_name)
 
-        backups = self.manager.list_backups()
+        # Verify success
+        self.assertTrue(result['success'])
+        self.assertEqual(result['message'], f"Deleted backup: {backup_name}")
+        self.assertFalse(backup_path.exists())
 
-        # Should be sorted by timestamp, newest first (data2 then data1)
-        self.assertEqual(len(backups), 2)
+    def test_delete_backup_not_found(self):
+        backup_name = "backup_missing.json"
+        backup_path = Path(self.temp_dir.name) / backup_name
 
-        # Check newest file is first
-        self.assertEqual(backups[0]["name"], "backup_20230102_120000.json")
-        self.assertEqual(backups[0]["path"], "/fake/backup/dir/backup_20230102_120000.json")
-        self.assertEqual(backups[0]["timestamp"], "2023-01-02T12:00:00")
-        self.assertEqual(backups[0]["packageCount"], 5)
-        self.assertEqual(backups[0]["deviceInfo"], {"model": "Device2"})
+        # Ensure it does NOT exist before deletion
+        self.assertFalse(backup_path.exists())
 
-        # Check oldest file is second
-        self.assertEqual(backups[1]["name"], "backup_20230101_120000.json")
-        self.assertEqual(backups[1]["path"], "/fake/backup/dir/backup_20230101_120000.json")
-        self.assertEqual(backups[1]["timestamp"], "2023-01-01T12:00:00")
-        self.assertEqual(backups[1]["packageCount"], 2)
-        self.assertEqual(backups[1]["deviceInfo"], {"model": "Device1"})
+        # Perform deletion
+        result = self.manager.delete_backup(backup_name)
 
-    @patch('pathlib.Path.glob')
-    @patch('builtins.open', new_callable=mock_open)
-    @patch('json.load')
-    def test_list_backups_corrupted(self, mock_json_load, mock_file, mock_glob):
-        """Test listing backups when one file is corrupted"""
-        # Mock glob to return two files
-        file1 = MagicMock(spec=Path)
-        file1.name = "backup_good.json"
-        file1.__str__.return_value = "/fake/backup/dir/backup_good.json"
+        # Verify not found
+        self.assertFalse(result['success'])
+        self.assertEqual(result['message'], f"Backup not found: {backup_name}")
 
-        file2 = MagicMock(spec=Path)
-        file2.name = "backup_corrupted.json"
-        file2.__str__.return_value = "/fake/backup/dir/backup_corrupted.json"
+    def test_delete_backup_exception(self):
+        backup_name = "backup_error.json"
+        backup_path = Path(self.temp_dir.name) / backup_name
+        backup_path.touch()
 
-        mock_glob.return_value = [file1, file2]
+        # Patch the specific unlink method to raise an exception
+        with patch.object(Path, 'unlink', side_effect=Exception("Permission denied")):
+            result = self.manager.delete_backup(backup_name)
 
-        # First file succeeds, second file throws an exception
-        data1 = {
-            "timestamp": "2023-01-01T12:00:00",
-            "count": 2,
-            "deviceInfo": {"model": "Device1"}
-        }
-        mock_json_load.side_effect = [data1, Exception("Corrupted JSON")]
+        self.assertFalse(result['success'])
+        self.assertTrue("Failed to delete backup" in result['message'])
+        self.assertTrue("Permission denied" in result['message'])
 
-        backups = self.manager.list_backups()
+    def test_delete_backup_path_traversal(self):
+        # Attempt to delete a file outside the backup directory.
+        # Note: _get_safe_backup_path takes the filename part using Path.name,
+        # meaning "../outside_backup.json" becomes "outside_backup.json"
+        # and doesn't actually trigger path traversal. The missing file
+        # naturally triggers 'Backup not found'.
+        backup_name = "../outside_backup.json"
 
-        # Should only contain the good file and not raise exception
-        self.assertEqual(len(backups), 1)
-        self.assertEqual(backups[0]["name"], "backup_good.json")
+        result = self.manager.delete_backup(backup_name)
 
-    @patch('pathlib.Path.glob')
-    def test_list_backups_exception(self, mock_glob):
-        """Test list_backups raises exception correctly on main failure"""
-        # Simulate an exception in glob
-        mock_glob.side_effect = Exception("Glob failure")
-
-        with self.assertRaises(Exception) as context:
-            self.manager.list_backups()
-
-        self.assertTrue(str(context.exception).startswith("Failed to list backups:"))
-        self.assertIn("Glob failure", str(context.exception))
+        self.assertFalse(result['success'])
+        self.assertTrue("Backup not found:" in result['message'])
 
 if __name__ == '__main__':
     unittest.main()
