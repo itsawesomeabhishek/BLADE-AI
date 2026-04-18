@@ -11,8 +11,8 @@ class TestADBOperationsBatch(unittest.TestCase):
         def mock_run(cmd, timeout=30):
             if "devices" in cmd:
                 return "List of devices attached\n123456789 device"
-            if "shell" in cmd and 'MODEL=' in cmd[2]:
-                return "MODEL=MockModel\nNAME=MockProduct\nMFG=MockManufacturer\nVER=MockVersion"
+            if "shell" in cmd and 'getprop ro.product.model' in cmd[2]:
+                return "MockModel\nMockProduct\nMockManufacturer\nMockVersion"
             return ""
         mock_run_command.side_effect = mock_run
 
