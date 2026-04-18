@@ -126,7 +126,7 @@ class ActionExecutor:
     # ⚡ Bolt: Pre-compile bloatware indicators into a single regex for O(n) substring matching
     # instead of iterative 'in' checks. This speeds up scanning by ~57%.
     _BLOATWARE_PATTERN = re.compile(
-        r'facebook|fb|instagram|tiktok|netflix|spotify|amazon|samsung\.|'
+        r'facebook|fb|instagram|tiktok|trill|netflix|spotify|amazon|samsung\.|'
         r'xiaomi\.|miui\.|huawei\.|weather|news|browser|game|music|video'
     )
 
