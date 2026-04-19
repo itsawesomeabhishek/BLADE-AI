@@ -1,0 +1,4 @@
+## 2025-02-28 - Regex Trailing Newline Bypass in Package Validation
+**Vulnerability:** The `ADBOperations.is_valid_package_name` regex used `$` for boundary validation, which in Python allows trailing newlines to bypass the check, potentially enabling command injection via `package_name\n`.
+**Learning:** Python's `re` module evaluates `$` as "end of string OR just before a newline at the end of the string." Relying on it for strict boundary enforcement in security-critical validations is insufficient. Furthermore, adding regex escape sequences like `\Z` inside normal docstrings triggers a `SyntaxWarning` (or `SyntaxError` in 3.12+) unless prefixed as a raw string (`r"""..."""`).
+**Prevention:** Always use `\Z` instead of `$` when performing exact-match string validation with Python's `re` module to prevent injection vulnerabilities. Always prefix docstrings containing regex sequences with `r` to avoid syntax errors.

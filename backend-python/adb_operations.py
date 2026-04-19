@@ -68,11 +68,14 @@ class ADBOperations:
 
     @staticmethod
     def is_valid_package_name(package_name: str) -> bool:
-        """Validate Android package name format to prevent injection attacks"""
+        r"""
+        Validate Android package name format to prevent injection attacks.
+        Uses \Z instead of $ to strictly enforce the end of string and prevent trailing newline bypass.
+        """
         if not package_name:
             return False
         # Standard Android package name format
-        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'
+        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*\Z'
         return bool(re.match(pattern, package_name))
 
     def __init__(self):
@@ -224,16 +227,17 @@ class ADBOperations:
     
     @staticmethod
     def is_valid_package_name(package_name: str) -> bool:
-        """
+        r"""
         Validate if a package name follows Android naming conventions.
         - Must start with a letter.
         - Can contain letters, numbers, underscores, and dots.
         - Each segment (separated by dot) must start with a letter.
         - Prevents flag injection as it cannot start with a hyphen.
+        - Use \Z instead of $ to prevent command injection via trailing newlines.
         """
         if not package_name:
             return False
-        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'
+        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*\Z'
         return bool(re.match(pattern, package_name))
 
     def _guess_package_type(self, package: str) -> str:
@@ -279,12 +283,13 @@ class ADBOperations:
     
     @staticmethod
     def is_valid_package_name(package_name: str) -> bool:
-        """
+        r"""
         Validate package name to prevent command injection.
         Rules: Starts with letter, only contains letters, numbers, and underscores,
         and optionally dots followed by letters/numbers/underscores.
+        Uses \Z instead of $ to strictly enforce the end of string and prevent trailing newline bypass.
         """
-        return bool(re.match(r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$', package_name))
+        return bool(re.match(r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*\Z', package_name))
 
     def uninstall_package(self, package_name: str) -> Dict:
         """Uninstall a package from device"""
