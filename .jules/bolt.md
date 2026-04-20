@@ -10,3 +10,6 @@
 ## 2024-05-26 - ADB Subprocess Bottleneck
 **Learning:** Executing sequential Python `subprocess.run` calls to fetch individual Android device properties via `adb shell getprop` introduces significant performance overhead due to repeated adb server round-trips and process spawning (e.g., 10-15ms vs 2-3ms).
 **Action:** Always batch multiple ADB shell commands into a single `subprocess.run` execution using shell separators (`;`) to minimize connection and process overhead, while ensuring outputs are safely padded and parsed.
+## 2024-05-27 - Regex Compilation in Python Backend Bottleneck
+**Learning:** Calling `re.match` dynamically with a string literal pattern (e.g. inside a validation method like `is_valid_package_name`) causes Python to re-compile (or fetch from a limited internal cache) the regex on every invocation, adding measurable overhead (e.g. ~42% slower). Furthermore, using `$` at the end of regex strings allows command injection via trailing newlines.
+**Action:** Always extract string validation regexes into class-level pre-compiled properties (`re.compile`) and use `\Z` instead of `$` to ensure absolute end-of-string matching. Expose the validation logic as a `@classmethod`.
