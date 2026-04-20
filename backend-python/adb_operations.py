@@ -66,14 +66,16 @@ class ADBOperations:
         'net.',
     )
 
-    @staticmethod
-    def is_valid_package_name(package_name: str) -> bool:
+    # ⚡ Bolt: Pre-compile regex for O(1) instantiation and use \Z for stricter security
+    _VALID_PKG_PATTERN = re.compile(r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*\Z')
+
+    @classmethod
+    def is_valid_package_name(cls, package_name: str) -> bool:
         """Validate Android package name format to prevent injection attacks"""
         if not package_name:
             return False
         # Standard Android package name format
-        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'
-        return bool(re.match(pattern, package_name))
+        return bool(cls._VALID_PKG_PATTERN.match(package_name))
 
     def __init__(self):
         # Determine base directory (PyInstaller exe or script location)
@@ -222,20 +224,6 @@ class ADBOperations:
         except Exception as e:
             raise ADBError(f"Failed to list packages: {str(e)}")
     
-    @staticmethod
-    def is_valid_package_name(package_name: str) -> bool:
-        """
-        Validate if a package name follows Android naming conventions.
-        - Must start with a letter.
-        - Can contain letters, numbers, underscores, and dots.
-        - Each segment (separated by dot) must start with a letter.
-        - Prevents flag injection as it cannot start with a hyphen.
-        """
-        if not package_name:
-            return False
-        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'
-        return bool(re.match(pattern, package_name))
-
     def _guess_package_type(self, package: str) -> str:
         """Guess if package is system or user app"""
         if package.startswith(self.SYSTEM_PREFIXES):
@@ -276,15 +264,6 @@ class ADBOperations:
         
         # Default to Safe (user apps, bloatware)
         return "Safe"
-    
-    @staticmethod
-    def is_valid_package_name(package_name: str) -> bool:
-        """
-        Validate package name to prevent command injection.
-        Rules: Starts with letter, only contains letters, numbers, and underscores,
-        and optionally dots followed by letters/numbers/underscores.
-        """
-        return bool(re.match(r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$', package_name))
 
     def uninstall_package(self, package_name: str) -> Dict:
         """Uninstall a package from device"""
