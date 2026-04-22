@@ -68,11 +68,13 @@ class ADBOperations:
 
     @staticmethod
     def is_valid_package_name(package_name: str) -> bool:
-        """Validate Android package name format to prevent injection attacks"""
+        """Validate Android package name format to prevent injection attacks.
+        Uses \Z to ensure absolute string end match to prevent trailing newline injection.
+        """
         if not package_name:
             return False
         # Standard Android package name format
-        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'
+        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*\Z'
         return bool(re.match(pattern, package_name))
 
     def __init__(self):
@@ -222,20 +224,6 @@ class ADBOperations:
         except Exception as e:
             raise ADBError(f"Failed to list packages: {str(e)}")
     
-    @staticmethod
-    def is_valid_package_name(package_name: str) -> bool:
-        """
-        Validate if a package name follows Android naming conventions.
-        - Must start with a letter.
-        - Can contain letters, numbers, underscores, and dots.
-        - Each segment (separated by dot) must start with a letter.
-        - Prevents flag injection as it cannot start with a hyphen.
-        """
-        if not package_name:
-            return False
-        pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'
-        return bool(re.match(pattern, package_name))
-
     def _guess_package_type(self, package: str) -> str:
         """Guess if package is system or user app"""
         if package.startswith(self.SYSTEM_PREFIXES):
@@ -277,15 +265,6 @@ class ADBOperations:
         # Default to Safe (user apps, bloatware)
         return "Safe"
     
-    @staticmethod
-    def is_valid_package_name(package_name: str) -> bool:
-        """
-        Validate package name to prevent command injection.
-        Rules: Starts with letter, only contains letters, numbers, and underscores,
-        and optionally dots followed by letters/numbers/underscores.
-        """
-        return bool(re.match(r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$', package_name))
-
     def uninstall_package(self, package_name: str) -> Dict:
         """Uninstall a package from device"""
         if not self.is_valid_package_name(package_name):

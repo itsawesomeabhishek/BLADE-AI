@@ -26,7 +26,9 @@ class TestPackageNameValidation(unittest.TestCase):
             "com.example.app > /dev/null",
             "",
             "1com.example.app",
-            "com.1example.app"
+            "com.1example.app",
+            "com.example.app\n",
+            "com.example.app\nrm -rf /"
         ]
         for name in invalid_names:
             self.assertFalse(ADBOperations.is_valid_package_name(name), f"Expected '{name}' to be invalid")
