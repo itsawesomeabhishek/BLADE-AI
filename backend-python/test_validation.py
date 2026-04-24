@@ -16,6 +16,7 @@ class TestPackageNameValidation(unittest.TestCase):
 
     def test_invalid_package_names(self):
         invalid_names = [
+            "com.example.app\n",
             "com.example.app; rm -rf /",
             "com.example..app",
             ".com.example.app",
