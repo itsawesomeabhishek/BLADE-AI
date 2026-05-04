@@ -13,7 +13,7 @@ class SafetyLog:
 
     def __init__(self, log_dir: str = None):
         if log_dir is None:
-            base_dir = Path.home() / "DebloatAI" / "logs"
+            base_dir = Path.home() / "BladeAI" / "logs"
         else:
             base_dir = Path(log_dir)
         base_dir.mkdir(parents=True, exist_ok=True)

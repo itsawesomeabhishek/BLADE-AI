@@ -183,7 +183,7 @@ if __name__ == "__main__":
     print("\n")
     print("╔════════════════════════════════════════════════════════╗")
     print("║   OpenClaw Integration Test Suite                     ║")
-    print("║   Debloat AI                                           ║")
+    print("║   BLADE-AI                                           ║")
     print("╚════════════════════════════════════════════════════════╝")
     print()
     

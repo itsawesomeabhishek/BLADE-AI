@@ -1,15 +1,15 @@
 <p align="center">
-  <img src="icons/icon.png" alt="Debloat AI" width="120" />
+  <img src="icons/icon.png" alt="BLADE-AI" width="120" />
 </p>
 
-<h1 align="center">Debloat AI</h1>
+<h1 align="center">BLADE-AI</h1>
 
 <p align="center">
   <strong>Just tell it what to do. AI handles the rest.</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/abhishek112007/debloat-ai/releases"><img src="https://img.shields.io/github/v/release/abhishek112007/debloat-ai?style=flat-square&color=blue" alt="Release"></a>
+  <a href="https://github.com/abhishek112007/blade-ai/releases"><img src="https://img.shields.io/github/v/release/abhishek112007/blade-ai?style=flat-square&color=blue" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License"></a>
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey?style=flat-square" alt="Platform">
   <img src="https://img.shields.io/badge/Electron-28-47848F?style=flat-square&logo=electron" alt="Electron">
@@ -26,7 +26,7 @@
 
 ## OpenClaw — Talk to Your Phone
 
-**OpenClaw** is the core of Debloat AI. Instead of scrolling through hundreds of packages and guessing which ones are safe to remove, just tell the AI what you want:
+**OpenClaw** is the core of BLADE-AI. Instead of scrolling through hundreds of packages and guessing which ones are safe to remove, just tell the AI what you want:
 
 ```
 > remove all xiaomi bloatware
@@ -122,19 +122,19 @@ Toggle **Action Mode** ON to let the chatbot execute commands directly. Toggle i
 
 ### Install
 
-Download the latest installer from [**Releases**](https://github.com/abhishek112007/debloat-ai/releases):
+Download the latest installer from [**Releases**](https://github.com/abhishek112007/blade-ai/releases):
 
 | Platform | Download |
 |----------|----------|
-| Windows | `DebloatAI-Setup-x.x.x.exe` |
-| Linux | `DebloatAI-x.x.x.AppImage` |
-| macOS | `DebloatAI-x.x.x.dmg` |
+| Windows | `BladeAI-Setup-x.x.x.exe` |
+| Linux | `BladeAI-x.x.x.AppImage` |
+| macOS | `BladeAI-x.x.x.dmg` |
 
 ### First Run
 
 1. Connect your Android device via USB
 2. Accept the USB debugging prompt on your phone
-3. Launch Debloat AI
+3. Launch BLADE-AI
 4. Open Settings (gear icon) and enter your Perplexity API key
 5. Start typing commands in the chat — try `scan for bloatware`
 
@@ -144,8 +144,8 @@ Download the latest installer from [**Releases**](https://github.com/abhishek112
 
 ```bash
 # Clone
-git clone https://github.com/abhishek112007/debloat-ai.git
-cd debloat-ai
+git clone https://github.com/abhishek112007/blade-ai.git
+cd blade-ai
 
 # Install dependencies
 npm install
@@ -211,7 +211,7 @@ npm run build:electron        # electron-builder → installer
 ### Project Structure
 
 ```
-debloat-ai/
+blade-ai/
 ├── electron/                  # Electron main process
 │   ├── main.js                #   Window management, Python IPC
 │   └── preload.js             #   Secure bridge to renderer

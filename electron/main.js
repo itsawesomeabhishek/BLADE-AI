@@ -140,7 +140,7 @@ function createWindow() {
     icon: path.join(__dirname, '../icons/icon.ico'),
     backgroundColor: '#1a1a1a',
     show: false,
-    title: 'Debloat AI'
+    title: 'BLADE-AI'
   });
 
   if (process.env.NODE_ENV === 'development') {

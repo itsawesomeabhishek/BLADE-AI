@@ -116,7 +116,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({ deviceName, onClose }) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `debloat-ai-chat-${Date.now()}.json`;
+    a.download = `blade-ai-chat-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };

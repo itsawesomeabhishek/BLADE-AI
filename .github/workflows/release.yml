@@ -64,7 +64,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: debloat-ai-${{ matrix.platform }}
+          name: blade-ai-${{ matrix.platform }}
           path: |
             dist/*.exe
             dist/*.dmg
@@ -90,7 +90,7 @@ jobs:
           draft: false
           generate_release_notes: false
           body: |
-            ## Debloat AI ${{ github.ref_name }}
+            ## BLADE-AI ${{ github.ref_name }}
 
             ### What's New — OpenClaw Command Engine
             Just tell the AI what to do in plain English. Type commands like:
@@ -98,13 +98,13 @@ jobs:
             - `scan for bloatware`
             - `backup everything`
 
-            See the full [Changelog](https://github.com/abhishek112007/debloat-ai/blob/main/CHANGELOG.md).
+            See the full [Changelog](https://github.com/abhishek112007/blade-ai/blob/main/CHANGELOG.md).
 
             ### Download
 
             | Platform | File |
             |----------|------|
-            | Windows | `DebloatAI-Setup-*.exe` |
+            | Windows | `BladeAI-Setup-*.exe` |
             | Linux | `*.AppImage` or `*.deb` |
             | macOS | `*.dmg` |
 

@@ -16,7 +16,7 @@ class BackupManager:
         if backup_dir is None:
             # Use user's documents folder
             home = Path.home()
-            self.backup_dir = home / "DebloatAI" / "backups"
+            self.backup_dir = home / "BladeAI" / "backups"
         else:
             self.backup_dir = Path(backup_dir)
         

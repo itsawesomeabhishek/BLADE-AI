@@ -1,4 +1,4 @@
-// Premium Animation Variants for Debloat AI
+// Premium Animation Variants for BLADE-AI
 // Apple-inspired microinteractions with enhanced polish
 
 // Custom easing curves - typed properly for framer-motion

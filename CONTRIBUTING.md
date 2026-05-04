@@ -1,6 +1,6 @@
-# Contributing to Debloat AI
+# Contributing to BLADE-AI
 
-Thank you for your interest in contributing to Debloat AI! This document provides guidelines and instructions for contributing to the project.
+Thank you for your interest in contributing to BLADE-AI! This document provides guidelines and instructions for contributing to the project.
 
 ---
 
@@ -53,12 +53,12 @@ Before you begin, ensure you have:
 1. **Fork** the repository on GitHub
 2. **Clone** your fork:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/debloat-ai.git
-   cd debloat-ai
+   git clone https://github.com/YOUR_USERNAME/blade-ai.git
+   cd blade-ai
    ```
 3. **Add upstream** remote:
    ```bash
-   git remote add upstream https://github.com/abhishek112007/debloat-ai.git
+   git remote add upstream https://github.com/abhishek112007/blade-ai.git
    ```
 
 ---
@@ -460,6 +460,6 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-**Thank you for contributing to Debloat AI!** 🎉
+**Thank you for contributing to BLADE-AI!** 🎉
 
 Your help makes this project better for everyone.

@@ -1,4 +1,4 @@
-# ADB Setup Guide for Debloat AI
+# ADB Setup Guide for BLADE-AI
 
 ## Problem: Device connected but no packages showing
 
@@ -102,7 +102,7 @@ If you see **nothing**, your USB drivers aren't installed correctly.
 ## 🚀 Once Connected
 
 After ADB shows your device:
-1. **Restart Debloat AI app**
+1. **Restart BLADE-AI app**
 2. Packages should load automatically
 3. If not, click the **"Refresh Device Info"** button
 

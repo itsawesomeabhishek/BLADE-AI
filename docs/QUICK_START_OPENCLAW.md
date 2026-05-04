@@ -2,7 +2,7 @@
 
 ## ✨ What's New
 
-Your Debloat AI chatbot can now **execute actions** based on natural language! No more clicking through menus - just tell the bot what you want to do.
+Your BLADE-AI chatbot can now **execute actions** based on natural language! No more clicking through menus - just tell the bot what you want to do.
 
 ## 🎯 Try These Commands
 
@@ -117,7 +117,7 @@ The bot will **never** remove anything without:
 
 ## 📱 Using OpenClaw Externally (Optional)
 
-Want to control Debloat AI from WhatsApp or Telegram?
+Want to control BLADE-AI from WhatsApp or Telegram?
 
 1. **Install OpenClaw**:
    ```powershell
@@ -130,7 +130,7 @@ Want to control Debloat AI from WhatsApp or Telegram?
    ```
    [WhatsApp]
    You: Remove bloatware from my phone
-   Claw: 🔍 Scanning via Debloat AI...
+   Claw: 🔍 Scanning via BLADE-AI...
    Claw: Found 12 packages. Remove all? (yes/no)
    You: yes
    Claw: ✅ Done! Removed 12 apps.
@@ -211,7 +211,7 @@ A: Yes! Click the microphone icon and speak your command.
 
 ## 🎉 Get Started
 
-1. Open Debloat AI
+1. Open BLADE-AI
 2. Connect your Android device
 3. Click the chat icon
 4. Type: "Scan for bloatware"

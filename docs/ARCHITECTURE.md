@@ -1,9 +1,9 @@
-# Debloat AI - Project Architecture
+# BLADE-AI - Project Architecture
 
 ## 📁 Project Structure
 
 ```
-debloat-ai/
+blade-ai/
 ├── 📄 Configuration Files (Root)
 │   ├── package.json              # Main project metadata & scripts
 │   ├── .gitignore               # Git ignore rules
@@ -97,7 +97,7 @@ debloat-ai/
 │   └── platform-tools/         # Bundled ADB binaries
 │
 ├── 📦 dist/                     # Electron Installers (gitignored)
-│   └── DebloatAI-Setup-*.exe   # Final Windows installer
+│   └── BladeAI-Setup-*.exe   # Final Windows installer
 │
 └── 🔐 .github/                   # GitHub Actions
     └── workflows/
@@ -313,9 +313,9 @@ npm run build
 3. `build:electron` → electron-builder creates installer in `dist/`
 
 **Final Output:**
-- Windows: `DebloatAI-Setup-1.0.0.exe` (NSIS installer)
-- Linux: `debloat-ai_*.AppImage`, `debloat-ai_*.deb`
-- macOS: `Debloat-AI_*.dmg`
+- Windows: `BladeAI-Setup-1.0.0.exe` (NSIS installer)
+- Linux: `blade-ai_*.AppImage`, `blade-ai_*.deb`
+- macOS: `blade-ai_*.dmg`
 
 ---
 

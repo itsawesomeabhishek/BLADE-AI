@@ -1,10 +1,10 @@
 """
-OpenClaw Skill: Debloat AI Controller
-Control your Debloat AI app through OpenClaw (WhatsApp, Telegram, Discord, etc.)
+OpenClaw Skill: BLADE-AI Controller
+Control your BLADE-AI app through OpenClaw (WhatsApp, Telegram, Discord, etc.)
 
 Installation:
 1. Copy this file to your OpenClaw skills directory
-2. Ensure Debloat AI app is running
+2. Ensure BLADE-AI app is running
 3. Use from any chat app connected to OpenClaw
 """
 
@@ -14,11 +14,11 @@ import socket
 from typing import Dict, List, Any
 
 
-class DebloatController:
-    """Control Debloat AI application via OpenClaw"""
+class BladeController:
+    """Control BLADE-AI application via OpenClaw"""
     
     def __init__(self):
-        self.app_name = "Debloat AI"
+        self.app_name = "BLADE-AI"
     
     def scan_bloatware(self) -> str:
         """
@@ -28,7 +28,7 @@ class DebloatController:
         """
         try:
             # This is a placeholder - actual implementation would communicate
-            # with the Debloat AI app via IPC or HTTP
+            # with the BLADE-AI app via IPC or HTTP
             return """
 🔍 Scanning for bloatware...
 
@@ -102,7 +102,7 @@ Reply "confirm" to proceed or "cancel" to abort.
 💾 Creating backup...
 
 Backup created: backup_2026-02-20_14-30.json
-Location: C:\\Users\\YourName\\AppData\\Roaming\\debloat-ai\\backups
+Location: C:\\Users\\YourName\\AppData\\Roaming\\blade-ai\\backups
 
 All current packages have been saved. You can restore them anytime.
 """
@@ -142,10 +142,10 @@ Status: ✅ Connected via ADB
 
 # OpenClaw Skill Metadata
 SKILL_INFO = {
-    "name": "Debloat AI Controller",
-    "description": "Control your Debloat AI app to remove bloatware from Android devices",
+    "name": "BLADE-AI Controller",
+    "description": "Control your BLADE-AI app to remove bloatware from Android devices",
     "version": "1.0.0",
-    "author": "Debloat AI Team",
+    "author": "BLADE-AI Team",
     "commands": [
         {
             "name": "scan_bloatware",

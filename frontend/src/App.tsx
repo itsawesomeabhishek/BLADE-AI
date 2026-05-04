@@ -241,7 +241,7 @@ const App: React.FC = () => {
             whileHover={{ scale: 1.02 }}
             transition={{ type: 'spring', stiffness: 400 }}
           >
-            <img src="/icon-192.png" alt="Debloat AI" className="w-7 h-7 rounded-lg" />
+            <img src="/icon-192.png" alt="BLADE-AI" className="w-7 h-7 rounded-lg" />
             <motion.h1 
               className="text-lg font-semibold tracking-tight" 
               style={{
@@ -249,7 +249,7 @@ const App: React.FC = () => {
                 letterSpacing: '-0.02em'
               }}
             >
-              Debloat AI
+              BLADE-AI
             </motion.h1>
             <motion.span 
               className="text-xs px-2 py-0.5 rounded-full" 

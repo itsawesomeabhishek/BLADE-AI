@@ -1,10 +1,10 @@
-# OpenClaw Integration for Debloat AI
+# OpenClaw Integration for BLADE-AI
 
-Control your Debloat AI application through natural language commands - either within the app's chatbot or from external apps like WhatsApp, Telegram, or Discord via OpenClaw.
+Control your BLADE-AI application through natural language commands - either within the app's chatbot or from external apps like WhatsApp, Telegram, or Discord via OpenClaw.
 
 ## 🎯 What This Does
 
-This integration adds **action execution** to the Debloat AI chatbot, allowing you to:
+This integration adds **action execution** to the BLADE-AI chatbot, allowing you to:
 
 - ✅ Remove packages by typing "Remove Facebook"
 - ✅ Scan for bloatware with "Scan my phone"
@@ -51,7 +51,7 @@ This integration adds **action execution** to the Debloat AI chatbot, allowing y
 
 ### Option 1: In-App Chatbot (Already Integrated!)
 
-The chatbot inside Debloat AI now automatically detects and executes commands.
+The chatbot inside BLADE-AI now automatically detects and executes commands.
 
 **No additional setup needed!** Just use the app's chatbot.
 
@@ -63,11 +63,11 @@ The chatbot inside Debloat AI now automatically detects and executes commands.
 
 ### Option 2: External Control via OpenClaw
 
-Control Debloat AI from WhatsApp, Telegram, Discord, or any chat app via OpenClaw.
+Control BLADE-AI from WhatsApp, Telegram, Discord, or any chat app via OpenClaw.
 
 #### Prerequisites
 - OpenClaw installed and running ([https://openclaw.ai](https://openclaw.ai))
-- Debloat AI application running
+- BLADE-AI application running
 - Android device connected via ADB
 
 #### Installation Steps
@@ -257,7 +257,7 @@ if match:
 ### External OpenClaw Not Working
 
 **Check:**
-1. Debloat AI app is running
+1. BLADE-AI app is running
 2. Android device connected
 3. OpenClaw skill installed correctly
 4. IPC communication working
@@ -292,10 +292,10 @@ Bot: ✅ Removed 4/4 apps!
 
 ### Via WhatsApp (with OpenClaw)
 ```
-WhatsApp → OpenClaw → Debloat AI
+WhatsApp → OpenClaw → BLADE-AI
 
 You: "Remove bloatware from my Samsung"
-Claw: *triggers Debloat AI scan*
+Claw: *triggers BLADE-AI scan*
 Claw: Found 18 Samsung bloatware apps
       Remove all? (yes/no)
 You: yes
@@ -304,14 +304,14 @@ Claw: ✅ Done! Removed 18 apps.
 
 ## 🎓 Next Steps
 
-1. **Try It** - Open the Debloat AI chatbot and try commands
+1. **Try It** - Open the BLADE-AI chatbot and try commands
 2. **Install OpenClaw** - For external control (optional)
 3. **Customize** - Add your own command patterns
 4. **Share** - Tell others about this integration!
 
 ## 📄 License
 
-MIT License - Same as Debloat AI
+MIT License - Same as BLADE-AI
 
 ## 🤝 Contributing
 
@@ -319,4 +319,4 @@ Have ideas for new commands or improvements? Open an issue or PR!
 
 ---
 
-**Made with ❤️ for the Debloat AI community**
+**Made with ❤️ for the BLADE-AI community**

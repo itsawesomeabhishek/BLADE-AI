@@ -1,6 +1,6 @@
 # Creating Your First Release
 
-This guide walks you through creating your first production release of Debloat AI.
+This guide walks you through creating your first production release of BLADE-AI.
 
 ## Prerequisites
 
@@ -89,16 +89,16 @@ Once all builds complete:
 Your release should include:
 
 ### Windows
-- `Debloat-AI_1.0.0_x64_en-US.msi` - MSI installer
-- `Debloat-AI_1.0.0_x64-setup.exe` - NSIS installer (if configured)
+- `blade-ai_1.0.0_x64_en-US.msi` - MSI installer
+- `blade-ai_1.0.0_x64-setup.exe` - NSIS installer (if configured)
 
 ### Linux
-- `debloat-ai_1.0.0_amd64.AppImage` - Universal AppImage
-- `debloat-ai_1.0.0_amd64.deb` - Debian package
+- `blade-ai_1.0.0_amd64.AppImage` - Universal AppImage
+- `blade-ai_1.0.0_amd64.deb` - Debian package
 
 ### macOS
-- `Debloat-AI_aarch64.dmg` - Apple Silicon (M1/M2/M3)
-- `Debloat-AI_x64.dmg` - Intel Macs
+- `blade-ai_aarch64.dmg` - Apple Silicon (M1/M2/M3)
+- `blade-ai_x64.dmg` - Intel Macs
 
 ## Testing the Release
 
@@ -126,13 +126,13 @@ Your release should include:
 # 4. Verify packages load
 
 # Linux
-chmod +x Debloat-AI_*.AppImage
-./Debloat-AI_*.AppImage
+chmod +x blade-ai_*.AppImage
+./blade-ai_*.AppImage
 # Connect device and verify
 
 # Or with .deb
-sudo dpkg -i debloat-ai_*.deb
-debloat-ai
+sudo dpkg -i blade-ai_*.deb
+blade-ai
 # Connect device and verify
 ```
 

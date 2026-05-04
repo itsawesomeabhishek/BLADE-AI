@@ -51,7 +51,7 @@ The UI enriches the pending action card with AI-derived safety badges for each t
 - Backend routing: backend-python/main.py
 
 ## Data Artifacts
-- Safety log path: ~/DebloatAI/logs/action_safety_log.json
+- Safety log path: ~/BladeAI/logs/action_safety_log.json
 - Execution request includes actionModeToken and confirmationPhrase
 
 ## Alternatives and Variations

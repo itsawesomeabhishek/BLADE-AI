@@ -181,7 +181,7 @@ questions but won't execute any actions.
 
 ### Frontend Components
 
-**[ChatBot.tsx](c:/Users/Abhishek/debloat-ai/frontend/src/components/ChatBot.tsx)**
+**[ChatBot.tsx](c:/Users/Abhishek/blade-ai/frontend/src/components/ChatBot.tsx)**
 - Added `actionModeEnabled` state
 - Added `toggleActionMode()` function with safety warning
 - Updated `sendMessage()` to check mode before parsing commands
@@ -228,7 +228,7 @@ const [pendingAction, setPendingAction] = useState<CommandParseResult | null>(nu
 
 ## 📚 Documentation Created
 
-### [ACTION_MODE_SAFETY.md](c:/Users/Abhishek/debloat-ai/ACTION_MODE_SAFETY.md)
+### [ACTION_MODE_SAFETY.md](c:/Users/Abhishek/blade-ai/ACTION_MODE_SAFETY.md)
 Complete safety guide including:
 - What Action Mode is
 - How it works

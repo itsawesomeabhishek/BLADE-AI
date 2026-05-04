@@ -1,4 +1,4 @@
-// Shared TypeScript types for Debloat AI app components
+// Shared TypeScript types for BLADE-AI app components
 
 export type DeviceInfo = {
   name: string;

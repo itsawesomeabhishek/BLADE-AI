@@ -112,7 +112,7 @@ Implementation detail:
 
 ## Safety Log
 Each confirmed or cancelled action is appended to a local JSON log file for auditability.
-- Default location: `~/DebloatAI/logs/action_safety_log.json`
+- Default location: `~/BladeAI/logs/action_safety_log.json`
 - Logged fields: action, packages, risk levels, confirmation status, and result message
 
 ## What Makes This "Safety Interlock"

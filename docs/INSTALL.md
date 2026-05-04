@@ -5,8 +5,8 @@
 ### Windows
 
 1. **Download the Installer**
-   - Go to [Releases](https://github.com/abhishek112007/debloat-ai/releases/latest)
-   - Download `Debloat-AI_x.x.x_x64_en-US.msi`
+   - Go to [Releases](https://github.com/abhishek112007/blade-ai/releases/latest)
+   - Download `blade-ai_x.x.x_x64_en-US.msi`
 
 2. **Run the Installer**
    - Double-click the downloaded `.msi` file
@@ -14,8 +14,8 @@
    - Click "Install" (no admin rights needed for current user install)
 
 3. **Launch the Application**
-   - Find "Debloat AI" in your Start Menu
-   - Or search for "Debloat AI" in Windows search
+   - Find "BLADE-AI" in your Start Menu
+   - Or search for "BLADE-AI" in Windows search
 
 ### Linux
 
@@ -24,17 +24,17 @@
 1. **Download AppImage**
    ```bash
    # Download from releases page
-   wget https://github.com/abhishek112007/debloat-ai/releases/latest/download/Debloat-AI_x.x.x_amd64.AppImage
+   wget https://github.com/abhishek112007/blade-ai/releases/latest/download/blade-ai_x.x.x_amd64.AppImage
    ```
 
 2. **Make it Executable**
    ```bash
-   chmod +x Debloat-AI_x.x.x_amd64.AppImage
+   chmod +x blade-ai_x.x.x_amd64.AppImage
    ```
 
 3. **Run the Application**
    ```bash
-   ./Debloat-AI_x.x.x_amd64.AppImage
+   ./blade-ai_x.x.x_amd64.AppImage
    ```
 
 #### Option 2: Debian Package (.deb)
@@ -42,35 +42,35 @@
 1. **Download and Install**
    ```bash
    # Download
-   wget https://github.com/abhishek112007/debloat-ai/releases/latest/download/debloat-ai_x.x.x_amd64.deb
+   wget https://github.com/abhishek112007/blade-ai/releases/latest/download/blade-ai_x.x.x_amd64.deb
    
    # Install
-   sudo dpkg -i debloat-ai_x.x.x_amd64.deb
+   sudo dpkg -i blade-ai_x.x.x_amd64.deb
    
    # Fix dependencies if needed
    sudo apt-get install -f
    ```
 
 2. **Run from Applications Menu**
-   - Find "Debloat AI" in your applications menu
-   - Or run from terminal: `debloat-ai`
+   - Find "BLADE-AI" in your applications menu
+   - Or run from terminal: `blade-ai`
 
 ### macOS
 
 1. **Download DMG File**
-   - Go to [Releases](https://github.com/abhishek112007/debloat-ai/releases/latest)
+   - Go to [Releases](https://github.com/abhishek112007/blade-ai/releases/latest)
    - Download the `.dmg` file for your architecture:
-     - Apple Silicon (M1/M2/M3): `Debloat-AI_aarch64.dmg`
-     - Intel: `Debloat-AI_x64.dmg`
+     - Apple Silicon (M1/M2/M3): `blade-ai_aarch64.dmg`
+     - Intel: `blade-ai_x64.dmg`
 
 2. **Install the Application**
    - Open the downloaded `.dmg` file
-   - Drag "Debloat AI" to your Applications folder
+   - Drag "BLADE-AI" to your Applications folder
    - Eject the DMG
 
 3. **First Launch**
    - Go to Applications folder
-   - Right-click on "Debloat AI"
+   - Right-click on "BLADE-AI"
    - Select "Open" (needed first time for unsigned apps)
    - Click "Open" in the security dialog
 
@@ -80,7 +80,7 @@
 
 ### ADB (Android Debug Bridge)
 
-You **MUST** install ADB for Debloat AI to work.
+You **MUST** install ADB for BLADE-AI to work.
 
 #### Windows
 
@@ -145,7 +145,7 @@ adb --version
 
 ## First Time Setup
 
-1. **Launch Debloat AI**
+1. **Launch BLADE-AI**
    - The app will automatically detect your connected Android device
 
 2. **Configure AI Features (Optional)**
@@ -164,7 +164,7 @@ adb --version
 
 ### Test Device Connection
 
-1. Launch Debloat AI
+1. Launch BLADE-AI
 2. Connect your Android device via USB
 3. You should see:
    - Device name and model in the top panel
@@ -210,8 +210,8 @@ If you prefer to build from source or the pre-built installers don't work:
 
 ```bash
 # Prerequisites: Node.js 18+, Python 3.10+, ADB
-git clone https://github.com/abhishek112007/debloat-ai.git
-cd debloat-ai
+git clone https://github.com/abhishek112007/blade-ai.git
+cd blade-ai
 npm install
 npm run build
 ```
@@ -222,8 +222,8 @@ See the main [README.md](README.md) for detailed development setup.
 
 ## Getting Help
 
-- **Issues**: https://github.com/abhishek112007/debloat-ai/issues
-- **Discussions**: https://github.com/abhishek112007/debloat-ai/discussions
+- **Issues**: https://github.com/abhishek112007/blade-ai/issues
+- **Discussions**: https://github.com/abhishek112007/blade-ai/discussions
 - **Documentation**: See [README.md](README.md) for full documentation
 
 ---

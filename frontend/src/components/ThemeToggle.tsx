@@ -51,7 +51,7 @@ export function App() {
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <header className="border-b border-gray-200 dark:border-gray-800 p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-bold">Debloat AI</h1>
+          <h1 className="text-xl font-bold">BLADE-AI</h1>
           <ThemeToggle />
         </div>
       </header>

@@ -1,7 +1,7 @@
 {
-  "name": "debloat-ai",
+  "name": "blade-ai",
   "version": "2.0.1",
-  "description": "Debloat AI – Intelligently remove bloatware from Android devices",
+  "description": "BLADE-AI – Intelligently remove bloatware from Android devices",
   "main": "electron/main.js",
   "author": "Abhishek",
   "license": "MIT",
@@ -17,9 +17,9 @@
     "clean": "rimraf frontend/dist dist build-output"
   },
   "build": {
-    "appId": "com.debloatai.app",
-    "productName": "Debloat AI",
-    "artifactName": "DebloatAI-Setup-${version}.${ext}",
+    "appId": "com.bladeai.app",
+    "productName": "BLADE-AI",
+    "artifactName": "BladeAI-Setup-${version}.${ext}",
     "directories": {
       "output": "dist"
     },
@@ -48,7 +48,7 @@
         }
       ],
       "icon": "icons/icon.ico",
-      "publisherName": "Debloat AI",
+      "publisherName": "BLADE-AI",
       "signAndEditExecutable": false
     },
     "nsis": {
@@ -58,7 +58,7 @@
       "uninstallerIcon": "icons/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Debloat AI",
+      "shortcutName": "BLADE-AI",
       "runAfterFinish": true
     },
     "mac": {
