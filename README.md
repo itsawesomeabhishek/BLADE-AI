@@ -87,7 +87,7 @@ Toggle **Action Mode** ON to let the chatbot execute commands directly. Toggle i
 ## Demo & Screenshots
 
 <p align="center">
-  <video src="docs/screenshots/Timeline%201.mov" width="800" controls="controls" autoplay loop muted></video>
+  <video src="https://raw.githubusercontent.com/itsawesomeabhishek/BLADE-AI/main/docs/screenshots/Timeline_1.mov" width="800" controls="controls" autoplay loop muted></video>
   <br>
   <em>BLADE-AI in Action — Complete Workflow Demonstration</em>
 </p>
