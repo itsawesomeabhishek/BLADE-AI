@@ -753,7 +753,7 @@ const App: React.FC = () => {
                 transition: { duration: 0.15 }
               }}
               whileTap={{ scale: 0.96 }}
-              title="Clear selection"
+              title="Clear selection" aria-label="Clear selection"
             >
               <FiX className="w-4 h-4" />
             </motion.button>
@@ -790,6 +790,7 @@ const App: React.FC = () => {
                     setNotifications((prev) => prev.filter((n) => n.id !== notification.id))
                   }
                   className="ml-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1 rounded-full"
+                  title="Close notification" aria-label="Close notification"
                   whileHover={{ scale: 1.2, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
                 >
