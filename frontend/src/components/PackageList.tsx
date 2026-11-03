@@ -279,6 +279,8 @@ const PackageList: React.FC<PackageListProps> = ({
     });
   }, [baseStats, selectedPackages, onStatsChange]);
 
+  const deferredSearch = useDeferredValue(search);
+
   const filtered = useMemo(() => {
     const searchLower = deferredSearch.toLowerCase();
     return packages.filter((pkg) => {
